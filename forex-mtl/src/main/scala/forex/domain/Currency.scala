@@ -1,10 +1,13 @@
 package forex.domain
 
 import cats.Show
+import enumeratum._
 
-sealed trait Currency
+import scala.collection.immutable
 
-object Currency {
+sealed trait Currency extends EnumEntry
+
+object Currency extends Enum[Currency] with CatsEnum[Currency]{
   case object AUD extends Currency
   case object CAD extends Currency
   case object CHF extends Currency
@@ -39,4 +42,14 @@ object Currency {
     case "USD" => USD
   }
 
+  val values: immutable.IndexedSeq[Currency] = findValues
+
+  val pairs: Seq[String] = {
+    import cats.syntax.show._
+    for {
+      from <- values
+      to <- values
+      if from != to
+    } yield s"${from.show}${to.show}"
+  }
 }

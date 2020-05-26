@@ -45,6 +45,13 @@ libraryDependencies ++= Seq(
   Libraries.circeJava8,
   Libraries.pureConfig,
   Libraries.logback,
+  Libraries.sttpCore,
+  Libraries.sttpJson4s,
+  Libraries.scalacacheCore,
+  Libraries.scalacacheGuava,
+  Libraries.json4s,
+  Libraries.enumeratum,
+  Libraries.monix,
   Libraries.scalaTest        % Test,
   Libraries.scalaCheck       % Test,
   Libraries.catsScalaCheck   % Test
