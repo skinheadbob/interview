@@ -10,7 +10,7 @@ import com.google.common.cache.CacheBuilder
 import forex.domain.{ Currency, Price, Rate, Timestamp }
 import forex.services.rates.errors.Error
 import forex.services.rates.{ errors, Algebra }
-import forex.services.{ OneFrameToken, OneFrameUrl, SLA_TTL }
+import forex.services.{ CacheRefreshIntervalSec, OneFrameToken, OneFrameUrl, SLA_TTL }
 import monix.execution.Cancelable
 import org.json4s.native.Serialization
 import scalacache.Entry
@@ -31,7 +31,7 @@ object OneFrameLive {
   implicit val serialization: Serialization.type = org.json4s.native.Serialization
 
   def startPolling(): Cancelable =
-    scheduler.scheduleAtFixedRate(0, 5, TimeUnit.SECONDS, () => OneFrameLive.populateCache())
+    scheduler.scheduleAtFixedRate(0, CacheRefreshIntervalSec, TimeUnit.SECONDS, () => OneFrameLive.populateCache())
 
   //TODO does 'Key' have to be String?
   private val cache: GuavaCache[Rate] = GuavaCache(CacheBuilder.newBuilder().build[String, Entry[Rate]])
