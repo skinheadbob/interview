@@ -34,11 +34,16 @@ Pro&Con for 'eager' and 'lazy' approach,
 
 This time I'm implementing the 'eager' approach to ensure the solution will not go over OneFrame quota.
 
-* This is the first [runnable version on dev brach](https://github.com/skinheadbob/interview/blob/87b4dbfa61486b65cf6e80a859c9f608caadce4a/forex-mtl/src/main/scala/forex/services/rates/interpreters/OneFrameLive.scala),
-    * Using 'scalacache' as it could support remote cache such as Redis/Memcache for scalability
-    * Start a background Monix scheduler to poll OneFrame and update all rates in cache
-    * This version does NOT conform to the FP style as the rest of the project
+The general idea is to periodically (every 2 min) perform OneFrame-lookup and cache all rates. 
+When user requests arrive, return the rate from cache. 
+
+* This is a [crude runnable version](https://github.com/skinheadbob/interview/blob/dev/forex-mtl/src/main/scala/forex/services/rates/interpreters/OneFrameLive.scala),
+    * Using 'scalacache' as it could support remote cache such as Redis/Memcache for scalability.
+    * Start a background Monix scheduler to poll OneFrame and update all rates in cache.
+    * This version does NOT conform to the FP style as the rest of the project. The cache is populated inside OneFrame object.
+    * I have created an Algebra-style [OneFrameClient](https://github.com/skinheadbob/interview/tree/dev/forex-mtl/src/main/scala/forex/services/oneframe), but haven't figured out how to use it to populate cache
 
 * What's unfinished
-    * 'OneFrameClient' can directly talk to OneFrame, but I haven't figured out how to use it to populate cache
-    * No proper test cases
+    * Move self-refreshing cache logic in OneFrameLive from companion object to class (not sure if there is a proper FP approach)
+    * Pass OneFrameLive config through 'ApplicationConfig' instead of hardcoding
+    * Proper test cases, happy path and edge cases such as 'no such currency'
