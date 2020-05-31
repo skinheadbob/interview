@@ -1,4 +1,4 @@
-import Dependencies._
+import Dependencies.Libraries
 
 name := "forex"
 version := "1.0.1"
@@ -55,5 +55,6 @@ libraryDependencies ++= Seq(
   Libraries.monix,
   Libraries.scalaTest        % Test,
   Libraries.scalaCheck       % Test,
-  Libraries.catsScalaCheck   % Test
+  Libraries.catsScalaCheck   % Test,
+  Libraries.mockito          % Test,
 )
