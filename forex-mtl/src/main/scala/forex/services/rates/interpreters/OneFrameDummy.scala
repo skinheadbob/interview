@@ -1,15 +1,17 @@
 package forex.services.rates.interpreters
 
-import forex.services.rates.Algebra
 import cats.Applicative
-import cats.syntax.applicative._
-import cats.syntax.either._
-import forex.domain.{ Price, Rate, Timestamp }
+import cats.data.EitherT
+import forex.domain.Rate
 import forex.services.rates.errors._
+import forex.services.rates.{Algebra, OneFrameClient, errors}
 
-class OneFrameDummy[F[_]: Applicative] extends Algebra[F] {
+class OneFrameDummy[F[_]: Applicative](oneFrameClient: OneFrameClient[F]) extends Algebra[F] {
 
   override def get(pair: Rate.Pair): F[Error Either Rate] =
-    Rate(pair, Price(BigDecimal(100)), Timestamp.now).asRight[Error].pure[F]
+    EitherT(oneFrameClient.allRates)
+      .leftMap[errors.Error](e => errors.Error.OneFrameLookupFailed(e.getMsg))
+      .map(rates => rates.filter(rate => rate.pair == pair).head)
+      .value
 
 }
