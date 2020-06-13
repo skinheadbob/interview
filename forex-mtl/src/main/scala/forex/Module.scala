@@ -3,6 +3,7 @@ package forex
 import cats.effect.{ConcurrentEffect, Timer}
 import forex.config.ApplicationConfig
 import forex.http.rates.RatesHttpRoutes
+import forex.modules.OneCache
 import forex.programs._
 import forex.services._
 import org.http4s._
@@ -10,12 +11,16 @@ import org.http4s.implicits._
 import org.http4s.server.middleware.{AutoSlash, Timeout}
 
 class Module[F[_]: ConcurrentEffect: Timer](config: ApplicationConfig) {
+
 //  uncomment to run 'OneFrameClient'
 //  import scala.concurrent.ExecutionContext.global
 //  import forex.services.oneframe.interpreters.OneFrameClient
 //  private val oneFrameClient: OneFrameClient[F] = oneframe.Interpreters.oneFrameHttpClient[F](config.oneFrame, global)
 //  private val ratesService: RatesService[F] = RatesServices.dummy[F](oneFrameClient)
-  private val ratesService: RatesService[F] = RatesServices.live[F]()
+
+  private val oneCache:OneCache = new OneCache(config.oneCache)
+
+  private val ratesService: RatesService[F] = RatesServices.live[F](oneCache)
 
   private val ratesProgram: RatesProgram[F] = RatesProgram[F](ratesService)
 

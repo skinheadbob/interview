@@ -2,19 +2,13 @@ package forex
 
 import cats.effect._
 import forex.config._
-import forex.services.rates.interpreters.OneFrameLive
 import fs2.Stream
 import org.http4s.server.blaze.BlazeServerBuilder
 
 object Main extends IOApp {
 
-  override def run(args: List[String]): IO[ExitCode] = {
-    //TODO conform to functional style
-    //TODO log each poll
-    OneFrameLive.startPolling()
-
+  override def run(args: List[String]): IO[ExitCode] =
     new Application[IO].stream.compile.drain.as(ExitCode.Success)
-  }
 
 }
 
